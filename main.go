@@ -5,7 +5,6 @@ import (
 	"image/draw"
 	_ "image/png"
 	"log"
-	"math"
 	"os"
 	"runtime"
 
@@ -19,10 +18,13 @@ import (
 )
 
 var (
-    triangle = []float32{
-        0, 0.5, 0, // top
-        -0.5, -0.5, 0, // left
-        0.5, -0.5, 0, // right
+    square = []float32{
+			-1., -1., 0., // top left point
+			1., 1., 0., // top right point
+			-1, 1, 0., // bottom left point
+			-1, -1, 0., // top left point
+			1., 1., 0., // top right point
+			1., -1., 0., // bottom right point
     }
     previousTime float64
     runTime float64 = 0.
@@ -41,31 +43,32 @@ func main() {
 
 	initOpenGL()
 
-    var vertexShaderSource = readShaderFile("shaderOne.vert")    // the vertex shader
+	var vertexShaderSource = readShaderFile("shaderOne.vert")    // the vertex shader
 	var fragmentShaderSource = readShaderFile("shaderOne.frag")		// the fragment shader
 
-    program, err := newProgram(vertexShaderSource, fragmentShaderSource)
+	program, err := newProgram(vertexShaderSource, fragmentShaderSource)
 
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+			panic(err)
+	}
 
-    // pass mask as a texture uniform
-    textureUniform := gl.GetUniformLocation(program, gl.Str("tex_mask\x00"))
+	// pass mask as a texture uniform
+	textureUniform := gl.GetUniformLocation(program, gl.Str("tex_mask\x00"))
 	gl.Uniform1i(textureUniform, 0)
 
-    // Load the texture
+	// Load the texture
 	texture, err := newTexture("square.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-    // configure the vertex data
-	vao := makeVao(triangle)
+	// configure the vertex data
+	vao := makeVao(square)
 	
-    previousTime = glfw.GetTime()
-	for !window.ShouldClose() {
+	// init time
+	previousTime = glfw.GetTime()
 
+	for !window.ShouldClose() {
         gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
         // Update
@@ -74,21 +77,23 @@ func main() {
         previousTime = time
 
         runTime += elapsed
-        runTime = math.Mod(runTime, 1)
 
         // Render
         gl.UseProgram(program)
         
-        // pass time as a uniform
-        runTimeUniform := gl.GetUniformLocation(program, gl.Str("u_runtime\x00"))
-        gl.Uniform1f(runTimeUniform, float32(runTime))
+        // pass time and resolution as uniforms
+        timeUniform := gl.GetUniformLocation(program, gl.Str("u_time\x00"))
+        gl.Uniform1f(timeUniform, float32(runTime))
+				
+				resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
+        gl.Uniform2i(resolutionUniform, int32(width), int32(height))
         
         // activate texture
         gl.ActiveTexture(gl.TEXTURE0)
         gl.BindTexture(gl.TEXTURE_2D, texture)
 
         gl.BindVertexArray(vao)
-        gl.DrawArrays(gl.TRIANGLES, 0, int32(len(triangle) / 3))
+        gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
         
         // Maintenance
         window.SwapBuffers()

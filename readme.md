@@ -8,7 +8,7 @@ This is half baked :
 - [x] load shader from file
 - [x] render shader
 - [x] pass float uniform to shader (time)
-- [ ] pass texture to shader as uniform
+- [x] pass texture to shader as uniform
 - [ ] extract texture data from shader
 - [ ] chain shaders (send output texture from a shader as input texture for the next)
 - [ ] generate artnet or sACN upd packages

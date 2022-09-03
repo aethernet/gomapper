@@ -1,25 +1,25 @@
 #version 410
 out vec4 frag_color;
-// in vec4 gl_FragCoord;
 
 uniform float u_time;
 uniform vec2 u_resolution;
 
-// Plot a line on Y using a value between 0.0-1.0
-float plot(vec2 st) {    
-    return smoothstep(0.02, 0.0, abs(st.y - st.x));
+uniform sampler2D t_mask;
+
+vec4 mix(vec4 color1, vec4 color2) { 
+  float r = ((color1.r * color1.a) + (color2.r * color2.a))/ 2;
+  float g = ((color1.g * color1.a) + (color2.g * color2.a))/ 2;
+  float b = ((color1.b * color1.a) + (color2.b * color2.a))/ 2;
+  float a = (color1.a + color2.a) / 2;
+  return vec4(r,g,b,a);
 }
 
 void main() {
-	vec2 st = gl_FragCoord.xy/u_resolution;
+    vec2 st = gl_FragCoord.xy/u_resolution / 2;
 
-  float y = st.x;
+    vec4 color = texture(t_mask, st);
 
-  vec3 color = vec3(y, y, y);
+    vec4 gradiant = vec4(st.x, abs(sin(u_time / 2)) / 2, 0.2, 1);
 
-  // plot a line
-  float pct = plot(st);
-  color = (1.0 - pct)*color+pct*vec3(0., 1., 0.);
-
-  frag_color = vec4(color.rgb, 1.);
+    frag_color = vec4(mix(color, gradiant));
 }

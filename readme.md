@@ -25,3 +25,4 @@ inspired by :
 - https://thebookofshaders.com
 - https://stackoverflow.com/questions/59433403/how-to-save-fragment-shader-image-changes-to-image-output-file
 - https://www.haroldserrano.com/blog/how-to-pass-data-from-shader-to-shader-in-opengl
+- https://learnopengl.com/book/book_pdf.pdf

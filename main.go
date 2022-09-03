@@ -18,6 +18,11 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
+const (
+	width  = 50
+	height = 50
+)
+
 var (
     square = []float32{
 			-1., -1., 0., // top left point
@@ -29,11 +34,7 @@ var (
     }
     previousTime float64
     runTime float64 = 0.
-)
-
-const (
-	width  = 800
-	height = 600
+		pixels [width*height*4]byte // will serve as an output in an unsafe way
 )
 
 func main() {
@@ -95,13 +96,10 @@ func main() {
 
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
-		
-		// im := image.NewNRGBA(image.Rect(0, 0, 400, 400))
 
 		// extract buffer result
-		pixels := make([]byte, width*height*4)
-		pixelsSlice := unsafe.Slice(&pixels, width*height*4)
-		gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixelsSlice))
+		gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
+		fmt.Println(pixels)
     
 		// fmt.Println(pixels)
 

@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	width  = 50
-	height = 50
+	width  = 800
+	height = 600
 )
 
 var (
@@ -95,11 +95,10 @@ func main() {
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
 
-		// extract buffer result
+		// // extract buffer result
+		// // printing is quite costly, so we skip that atm
 		gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
-		fmt.Println(pixels)
-    
-		// fmt.Println(pixels)
+		// fmt.Println(pixels) 
 
 		// Maintenance
 		window.SwapBuffers()

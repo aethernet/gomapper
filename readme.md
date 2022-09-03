@@ -13,8 +13,8 @@ This is half baked :
 - [ ] chain shaders (send output texture from a shader as input texture for the next)
 - [ ] generate artnet or sACN upd packages
 - [ ] add mask generator
-- [ ] load isf
-
+- [ ] add isf support
+- [ ] add automatic OSC -> ISF controls
 
 
 inspired by : 

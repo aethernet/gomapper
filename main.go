@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"unsafe"
 
 	// OR: github.com/go-gl/gl/v2.1/gl
 	"fmt"
@@ -69,36 +70,45 @@ func main() {
 	previousTime = glfw.GetTime()
 
 	for !window.ShouldClose() {
-        gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-        // Update
-        time := glfw.GetTime()
-        elapsed := time - previousTime
-        previousTime = time
+		// Update
+		time := glfw.GetTime()
+		elapsed := time - previousTime
+		previousTime = time
 
-        runTime += elapsed
+		runTime += elapsed
 
-        // Render
-        gl.UseProgram(program)
-        
-        // pass time and resolution as uniforms
-        timeUniform := gl.GetUniformLocation(program, gl.Str("u_time\x00"))
-        gl.Uniform1f(timeUniform, float32(runTime))
-				
-				resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
-        gl.Uniform2f(resolutionUniform, float32(width), float32(height))
-        
-        // activate texture
-        gl.ActiveTexture(gl.TEXTURE0)
-        gl.BindTexture(gl.TEXTURE_2D, texture)
+		// Render
+		gl.UseProgram(program)
+		
+		// pass time and resolution as uniforms
+		timeUniform := gl.GetUniformLocation(program, gl.Str("u_time\x00"))
+		gl.Uniform1f(timeUniform, float32(runTime))
+		
+		resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
+		gl.Uniform2f(resolutionUniform, float32(width), float32(height))
+		
+		// activate texture
+		gl.ActiveTexture(gl.TEXTURE0)
+		gl.BindTexture(gl.TEXTURE_2D, texture)
 
-        gl.BindVertexArray(vao)
-        gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
-        
-        // Maintenance
-        window.SwapBuffers()
-        glfw.PollEvents()
-    }
+		gl.BindVertexArray(vao)
+		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
+		
+		// im := image.NewNRGBA(image.Rect(0, 0, 400, 400))
+
+		// extract buffer result
+		pixels := make([]byte, width*height*4)
+		pixelsSlice := unsafe.Slice(&pixels, width*height*4)
+		gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixelsSlice))
+    
+		// fmt.Println(pixels)
+
+		// Maintenance
+		window.SwapBuffers()
+		glfw.PollEvents()
+	}
 }
 
 // initGlfw initializes glfw and returns a Window to use.

@@ -1,18 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	_ "image/png"
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
-	"unsafe"
-
-	// OR: github.com/go-gl/gl/v2.1/gl
-	"fmt"
-	"io/ioutil"
 	"strings"
+	"unsafe"
 
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"

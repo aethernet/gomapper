@@ -45,28 +45,53 @@ func main() {
 
 	var vertexShaderSource = readShaderFile("shaderOne.vert")    // the vertex shader
 	var fragmentShaderSource = readShaderFile("shaderOne.frag")		// the fragment shader
+	var mappingShaderSource = readShaderFile("shaderTwo.frag")		// the fragment shader
 
 	program, err := newProgram(vertexShaderSource, fragmentShaderSource)
-
 	if err != nil {
 			panic(err)
 	}
 
-	// pass mask as a texture uniform
+	program2, err := newProgram(vertexShaderSource, mappingShaderSource)
+	if err != nil {
+			panic(err)
+	}
+
+	// pass mask as a texture uniform on slot 0
 	textureUniform := gl.GetUniformLocation(program, gl.Str("tex_mask\x00"))
 	gl.Uniform1i(textureUniform, 0)
 
-	// Load the texture
-	texture, err := newTexture("square.png")
+	// Load texture to slot 0
+	texture, err := newTextureFromFile("square.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// configure the vertex data
 	vao := makeVao(square)
-	
+
 	// init time
 	previousTime = glfw.GetTime()
+	
+	// prepare texture for framebuffer for shader 1
+	var shader2Tex uint32
+	gl.GenTextures(1, &shader2Tex)
+	gl.BindTexture(gl.TEXTURE_2D, shader2Tex);
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, nil);
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+	// prepare framebuffer for shader1
+	var frameBuffer uint32
+	gl.GenFramebuffers(1, &frameBuffer)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
+
+	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shader2Tex, 0);
+
+	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
+		panic("something's wrong with our framebuffer")
+	}
 
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -78,7 +103,9 @@ func main() {
 
 		runTime += elapsed
 
-		// Render
+		/** Shader 1 go to a framebuffer **/
+
+		// Shader 1 is rendered here to the framebuffer
 		gl.UseProgram(program)
 		
 		// pass time and resolution as uniforms
@@ -95,6 +122,32 @@ func main() {
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
 
+		//Unbind the framebuffer so that you can draw normally again
+		gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
+
+		// here we put the resulting texture in slot 1
+		gl.ActiveTexture(gl.TEXTURE1)
+		gl.BindTexture(gl.TEXTURE_2D, shader2Tex)
+		
+		gl.ActiveTexture(gl.TEXTURE0) // get back to texture 0
+
+		/** Shader 2 go to screen **/
+		gl.UseProgram(program2)
+
+		// attach texture from shader 1 to uniform on shader2
+		shader1TUniform := gl.GetUniformLocation(program2, gl.Str("t_shaderOne\x00"));
+		gl.Uniform1i(shader1TUniform, 1); //We use 1 here because we used GL_TEXTURE1 to bind our texture
+		
+		// pass time and resolution as uniforms
+		timeUniform2 := gl.GetUniformLocation(program2, gl.Str("u_time\x00"))
+		gl.Uniform1f(timeUniform2, float32(runTime))
+		
+		resolutionUniform2 := gl.GetUniformLocation(program2, gl.Str("u_resolution\x00"))
+		gl.Uniform2f(resolutionUniform2, float32(width), float32(height))
+
+		gl.BindVertexArray(vao)
+		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
+		
 		// // extract buffer result
 		// // printing is quite costly, so we skip that atm
 		gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
@@ -221,7 +274,8 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
     return shader, nil
 }
 
-func newTexture(file string) (uint32, error) {
+// load texture file in texture slot0
+func newTextureFromFile(file string) (uint32, error) {
 	imgFile, err := os.Open(file)
 	if err != nil {
 		return 0, fmt.Errorf("texture %q not found on disk: %v", file, err)

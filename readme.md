@@ -9,7 +9,7 @@ This is half baked :
 - [x] render shader
 - [x] pass float uniform to shader (time)
 - [x] pass texture to shader as uniform
-- [ ] extract texture data from shader
+- [x] extract texture data from shader
 - [ ] chain shaders (send output texture from a shader as input texture for the next)
 - [ ] generate artnet or sACN upd packages
 - [ ] add mask generator

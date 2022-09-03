@@ -10,7 +10,8 @@ This is half baked :
 - [x] pass float uniform to shader (time)
 - [x] pass texture to shader as uniform
 - [x] extract texture data from shader
-- [ ] chain shaders (send output texture from a shader as input texture for the next)
+- [-] chain shaders (send output texture from a shader as input texture for the next)
+  working, but with a scaling problem (shader1 is zoomed in, in the display of shader2)
 - [ ] generate artnet or sACN upd packages
 - [ ] add mask generator
 - [ ] add isf support

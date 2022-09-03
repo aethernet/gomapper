@@ -1,12 +1,25 @@
 #version 410
-out vec4 frag_colour;
+out vec4 frag_color;
+// in vec4 gl_FragCoord;
 
 uniform float u_time;
-uniform float u_resolution;
+uniform vec2 u_resolution;
+
+// Plot a line on Y using a value between 0.0-1.0
+float plot(vec2 st) {    
+    return smoothstep(0.02, 0.0, abs(st.y - st.x));
+}
 
 void main() {
+	vec2 st = gl_FragCoord.xy/u_resolution;
 
-  vec4 color = vec4(abs(sin(u_time)), 1, 1, 1);
+  float y = st.x;
 
-  frag_colour = vec4(color.r, 0.1, 0.1, 1);
+  vec3 color = vec3(y, y, y);
+
+  // plot a line
+  float pct = plot(st);
+  color = (1.0 - pct)*color+pct*vec3(0., 1., 0.);
+
+  frag_color = vec4(color.rgb, 1.);
 }

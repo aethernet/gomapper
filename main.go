@@ -31,8 +31,8 @@ var (
 )
 
 const (
-	width  = 500
-	height = 500
+	width  = 800
+	height = 600
 )
 
 func main() {
@@ -86,7 +86,7 @@ func main() {
         gl.Uniform1f(timeUniform, float32(runTime))
 				
 				resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
-        gl.Uniform2i(resolutionUniform, int32(width), int32(height))
+        gl.Uniform2f(resolutionUniform, float32(width), float32(height))
         
         // activate texture
         gl.ActiveTexture(gl.TEXTURE0)

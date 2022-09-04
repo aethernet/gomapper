@@ -13,13 +13,13 @@ This is half baked :
 - [x] chain shaders (send output texture from a shader as input texture for the next)
 - [ ] use proper mask shaders
 - [ ] generate artnet or sACN udp packages
+- [ ] make it run on a jetson nano
 - [ ] deeply refactor code (modularize)
 - [ ] make basic debug UI
 - [ ] make basic control UI
 - [ ] add mask generator
 - [ ] add isf support
 - [ ] add automatic OSC -> ISF controls
-- [ ] make it run on a jetson nano
 
 Notes : 
 - frag shader 1 coordinate doens't requires a /2, while we do it on frag shader2 before displaying (the logic behind this escapes me atm, but it works)

@@ -13,7 +13,8 @@ This is half baked :
 - [x] chain shaders (send output texture from a shader as input texture for the next)
 - [x] refactor code for readability
 - [x] render each shader in its own texture
-- [ ] use proper mapping shaders
+- [x] use proper mapping shaders
+- [ ] extract pixels from mapping texture
 - [ ] generate artnet or sACN udp packages
 - [ ] make it run on a jetson nano
 - [ ] make basic debug UI

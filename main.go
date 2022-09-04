@@ -10,6 +10,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"unsafe"
 
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -32,7 +33,7 @@ var (
     }
     previousTime float64
     runTime float64 = 0.
-		pixels [width*height*4]byte // will serve as an output in an unsafe way
+		pixels [mappingWidth*3]byte // will serve as an output in an unsafe way
 )
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 
 	shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer := newFramebufferProgram(width, height, "default.vert", "shaderOne.frag")
 
-	// configure the vertex data
+	// configure the vertex data for a full screen square
 	vao := makeVao(square)
 
 	// init time
@@ -58,26 +59,18 @@ func main() {
 
 	for !window.ShouldClose() {	
 
-		// drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, mappingWidth, 1)
-
+		// render shaderOne to TEXTURE1
 		drawShaderToFramebuffer(shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer, width, height, vao, gl.TEXTURE1)
 		
-		// forward texture from shader1 to shader2
+		// Attach TEXTURE1 (shaderOne) to _Mapping Shader_
 		passTextureUniform := gl.GetUniformLocation(mappingProgram, gl.Str("t_tex\x00"))
 		gl.Uniform1i(passTextureUniform, 1)
 		
+		// render mappingShader to TEXTURE2
 		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, mappingWidth, 1, vao, gl.TEXTURE2)
 
-		//Bind the default framebuffer so that we can draw to screen
-		gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
-		
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		// gl.ActiveTexture(gl.TEXTURE0) // get back to texture 0
-
-		// // extract mapping shader pixels to buffer
-		// // printing is quite costly, so we skip that atm
-		// gl.ReadPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
-		// fmt.Println(pixels) 
+		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
+		extractMappedPixels(mappingWidth, 1)
 
 		/** go to screen **/
 		renderFramebufferToScreen(screenProgram, vao, 1)
@@ -87,9 +80,17 @@ func main() {
 		glfw.PollEvents()
 	}
 }
-	
+
+func extractMappedPixels (width int32, height int32) {
+	gl.ReadPixels(0, 0, width, height, gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
+	fmt.Println(pixels)
+}
+
 // pass TEXTURE1 to our screenProgram as we want to display on screen "Rendering shader" instead of MappingShader.
 func renderFramebufferToScreen(screenProgram uint32, vao uint32, framebufferIndex int) {
+	gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	
 	gl.UseProgram(screenProgram)
 
 	// attach texture from latest shader in chain to screen
@@ -153,9 +154,6 @@ func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32,
 		// here we put the resulting texture in slot 1
 		gl.ActiveTexture(GLtextureSlot)
 		gl.BindTexture(gl.TEXTURE_2D, texture)
-
-		// unbind framebuffer (back to default -> render to screen)
-		gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 }
 
 func newScreenProgram() uint32 {

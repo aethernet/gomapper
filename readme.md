@@ -13,6 +13,7 @@ This is half baked :
 - [x] chain shaders (send output texture from a shader as input texture for the next)
 - [ ] use proper mask shaders
 - [ ] generate artnet or sACN udp packages
+- [ ] deeply refactor code (modularize)
 - [ ] make basic debug UI
 - [ ] make basic control UI
 - [ ] add mask generator

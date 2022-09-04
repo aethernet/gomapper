@@ -94,8 +94,6 @@ func main() {
 	}
 
 	for !window.ShouldClose() {
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
 		// Update
 		time := glfw.GetTime()
 		elapsed := time - previousTime
@@ -103,9 +101,9 @@ func main() {
 
 		runTime += elapsed
 
-		/** Shader 1 go to a framebuffer **/
-
-		// Shader 1 is rendered here to the framebuffer
+		// Shader 1 is rendered to its framebuffer
+		gl.BindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		gl.UseProgram(program)
 		
 		// pass time and resolution as uniforms
@@ -122,12 +120,13 @@ func main() {
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
 
-		//Unbind the framebuffer so that you can draw normally again
-		gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
-
 		// here we put the resulting texture in slot 1
 		gl.ActiveTexture(gl.TEXTURE1)
 		gl.BindTexture(gl.TEXTURE_2D, shaderOneTex)
+
+		//Bind the default framebuffer so that we can draw to screen
+		gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		
 		gl.ActiveTexture(gl.TEXTURE0) // get back to texture 0
 

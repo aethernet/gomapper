@@ -15,7 +15,7 @@ vec4 mix(vec4 color1, vec4 color2) {
 }
 
 void main() {
-  vec2 st = gl_FragCoord.xy/u_resolution / 2;
+  vec2 st = gl_FragCoord.xy/ u_resolution / 2;
 
   vec4 color = texture(t_shaderOne, st);
 

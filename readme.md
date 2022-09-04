@@ -11,10 +11,11 @@ This is half baked :
 - [x] pass texture to shader as uniform
 - [x] extract texture data from shader
 - [x] chain shaders (send output texture from a shader as input texture for the next)
-- [ ] use proper mask shaders
+- [x] refactor code for readability
+- [x] render each shader in its own texture
+- [ ] use proper mapping shaders
 - [ ] generate artnet or sACN udp packages
 - [ ] make it run on a jetson nano
-- [ ] deeply refactor code (modularize)
 - [ ] make basic debug UI
 - [ ] make basic control UI
 - [ ] add mask generator

@@ -74,10 +74,10 @@ func main() {
 	previousTime = glfw.GetTime()
 	
 	// prepare texture for framebuffer for shader 1
-	var shader2Tex uint32
-	gl.GenTextures(1, &shader2Tex)
-	gl.BindTexture(gl.TEXTURE_2D, shader2Tex);
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, nil);
+	var shaderOneTex uint32
+	gl.GenTextures(1, &shaderOneTex)
+	gl.BindTexture(gl.TEXTURE_2D, shaderOneTex);
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, width, height, 0, gl.RGB, gl.UNSIGNED_BYTE, nil);
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -87,7 +87,7 @@ func main() {
 	gl.GenFramebuffers(1, &frameBuffer)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
 
-	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shader2Tex, 0);
+	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shaderOneTex, 0);
 
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		panic("something's wrong with our framebuffer")
@@ -127,7 +127,7 @@ func main() {
 
 		// here we put the resulting texture in slot 1
 		gl.ActiveTexture(gl.TEXTURE1)
-		gl.BindTexture(gl.TEXTURE_2D, shader2Tex)
+		gl.BindTexture(gl.TEXTURE_2D, shaderOneTex)
 		
 		gl.ActiveTexture(gl.TEXTURE0) // get back to texture 0
 

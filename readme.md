@@ -10,13 +10,15 @@ This is half baked :
 - [x] pass float uniform to shader (time)
 - [x] pass texture to shader as uniform
 - [x] extract texture data from shader
-- [-] chain shaders (send output texture from a shader as input texture for the next)
-  working, but with a scaling problem (shader1 is zoomed in, in the display of shader2)
-- [ ] generate artnet or sACN upd packages
+- [x] chain shaders (send output texture from a shader as input texture for the next)
+- [ ] generate artnet or sACN udp packages
 - [ ] add mask generator
 - [ ] add isf support
 - [ ] add automatic OSC -> ISF controls
+- [ ] make it run on a jetson nano
 
+Notes : 
+- frag shader 1 coordinate doens't requires a /2, while we do it on frag shader2 before displaying (the logic behind this escapes me atm, but it works)
 
 inspired by : 
 - https://github.com/KyleBanks/conways-gol

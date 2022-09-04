@@ -7,7 +7,7 @@ uniform vec2 u_resolution;
 uniform sampler2D t_mask;
 
 void main() {
-    vec2 st = gl_FragCoord.xy/u_resolution / 2;
+    vec2 st = gl_FragCoord.xy/u_resolution ;
 
     vec4 color = texture(t_mask, st);
 

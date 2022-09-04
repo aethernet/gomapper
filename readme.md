@@ -11,7 +11,10 @@ This is half baked :
 - [x] pass texture to shader as uniform
 - [x] extract texture data from shader
 - [x] chain shaders (send output texture from a shader as input texture for the next)
+- [ ] use proper mask shaders
 - [ ] generate artnet or sACN udp packages
+- [ ] make basic debug UI
+- [ ] make basic control UI
 - [ ] add mask generator
 - [ ] add isf support
 - [ ] add automatic OSC -> ISF controls

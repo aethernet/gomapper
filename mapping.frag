@@ -33,7 +33,7 @@ vec2 decodePositionFromColor(vec4 encoded, float width, float height) {
     
 void main() {
     // get mask pixel coordinate
-    vec2 uv = gl_FragCoord.xy ;
+    vec2 uv = gl_FragCoord.xy / 2;
     // get mask color at coordinate
     vec4 maskColor = texture(t_mask, uv);
     // get position in input shader encoded as color in mask (require the width and height of input shader)

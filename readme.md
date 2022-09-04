@@ -16,20 +16,26 @@ This is half baked :
 - [x] use proper mapping shaders
 - [x] extract pixels from mapping texture
 - [x] generate artnet or sACN udp packages
+- [x] fix broken mapping
+- [-] add mask generator from a json
 - [ ] basic debug UI [draw mapping lines on top of screen]
-- [ ] fix broken mapping
 - [ ] make it run on a jetson nano
-- [ ] make basic control UI
-- [ ] add mask generator
+- [-] make basic control UI
 - [ ] add isf support
 - [ ] add automatic OSC -> ISF controls
 
+Controls
+- [Space] - toggle view between Rendering and Mapping Shader
+- [Esc] - Quit
+
 
 Current limitations (todo for later):
-- Only send 1 universe
+- Only send 1 universe (512 pixels)
+- Only one shader as input
+- Lots of hardcoded values
 
 Notes : 
-- frag shader 1 coordinate doens't requires a /2, while we do it on frag shader2 before displaying (the logic behind this escapes me atm, but it works)
+- Encoding the mapping mask as a texture is good idea, but using .png as storage was stupid (it's a lossy format), let's just do a raw bytes format. It's unidimensional anyway.
 
 Thanks to : 
 - https://github.com/KyleBanks/conways-gol

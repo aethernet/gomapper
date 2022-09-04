@@ -48,7 +48,7 @@ vec4 poly(float x, float y, float size, float sides, float rotation, vec3 col){
 void main() {
     vec2 center = u_resolution * 0.5; // draw the shape at the center of the screen
     float size = u_resolution.y * 0.4; // make the shape a quarter of the screen height
-    float sides = 7.;
+    float sides = 2.;
     float rotation = u_time * 2.; // rotation is in radians, but for time it doesnt really matter
 
     // lets make our shape in the center of the screen. We have to subtract half of it's width and height just like in p5

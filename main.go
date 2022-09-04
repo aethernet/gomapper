@@ -12,6 +12,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/Hundemeier/go-sacn/sacn"
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -33,11 +34,13 @@ var (
     }
     previousTime float64
     runTime float64 = 0.
-		pixels [mappingWidth*3]byte // will serve as an output in an unsafe way
+		pixels [512]byte // will serve as an output in an unsafe way // TODO: this is only one universe, will have to be creative for multiuniverse
 )
 
 func main() {
 	runtime.LockOSThread()
+
+	sacnChan := initsACNTranmitter([]string{"192.168.178.40", "192.168.178.70"}, 1)
 
 	window := initGlfw()
 	defer glfw.Terminate()
@@ -67,10 +70,10 @@ func main() {
 		gl.Uniform1i(passTextureUniform, 1)
 		
 		// render mappingShader to TEXTURE2
-		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, mappingWidth, 1, vao, gl.TEXTURE2)
+		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2)
 
 		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
-		extractMappedPixels(mappingWidth, 1)
+		extractAndSendMappedPixels(mappingWidth, 1, sacnChan)
 
 		/** go to screen **/
 		renderFramebufferToScreen(screenProgram, vao, 1)
@@ -81,21 +84,31 @@ func main() {
 	}
 }
 
-func extractMappedPixels (width int32, height int32) {
+// extract mapped pixels from current framebuffer and send them using sacn
+func extractAndSendMappedPixels (width int32, height int32, sacn chan<-[512]byte) {
 	gl.ReadPixels(0, 0, width, height, gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
 	fmt.Println(pixels)
+	sacn<-pixels
 }
 
 // pass TEXTURE1 to our screenProgram as we want to display on screen "Rendering shader" instead of MappingShader.
-func renderFramebufferToScreen(screenProgram uint32, vao uint32, framebufferIndex int) {
+func renderFramebufferToScreen(screenProgram uint32, vao uint32, framebufferIndex int32) {
 	gl.BindFramebufferEXT(gl.FRAMEBUFFER, 0);
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	
 	gl.UseProgram(screenProgram)
 
-	// attach texture from latest shader in chain to screen
+	// attach texture from shaderOne to screen
 	textureUniform := gl.GetUniformLocation(screenProgram, gl.Str("t_tex\x00"));
-	gl.Uniform1i(textureUniform, 1);
+	gl.Uniform1i(textureUniform, framebufferIndex);
+
+	// pass mask texture to screen
+	maskUniform := gl.GetUniformLocation(screenProgram, gl.Str("t_mask\x00"))
+	gl.Uniform1i(maskUniform, 0)
+
+	// boolean to show mask uniform or not
+	showMaskUniform := gl.GetUniformLocation(screenProgram, gl.Str("u_showmask\x00"))
+	gl.Uniform1i(showMaskUniform, 1)
 
 	resolutionUniform := gl.GetUniformLocation(screenProgram, gl.Str("u_resolution\x00"))
 	gl.Uniform2f(resolutionUniform, float32(width), float32(height))
@@ -143,10 +156,6 @@ func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32,
 		
 		resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
 		gl.Uniform2f(resolutionUniform, float32(width), float32(height))
-		
-		// // activate texture
-		// gl.ActiveTexture(gl.TEXTURE0)
-		// gl.BindTexture(gl.TEXTURE_2D, mappingTexture)
 
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
@@ -352,4 +361,28 @@ func newTextureFromFile(file string, bindToTextureSlot uint32) (uint32, error) {
 		gl.Ptr(rgba.Pix))
 
 	return texture, nil
+}
+
+func initsACNTranmitter(ips []string, universe uint16) chan<-[512]byte {
+	transmitter, err := sacn.NewTransmitter("", [16]byte{1, 2, 3}, "test")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//activates the first universe
+	channel, err := transmitter.Activate(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//deactivate the channel on exit
+	// defer close(channel)
+
+	//set a unicast destination, and/or use multicast
+	// trans.SetMulticast(1, true)//this specific setup will not multicast on windows, 
+	//because no bind address was provided
+	
+	//set some example ip-addresses
+	transmitter.SetDestinations(universe, ips)
+
+	return channel
 }

@@ -25,15 +25,15 @@ vec2 decodePositionFromColor(vec4 encoded, float width, float height) {
     // bitshifting should be faster but would requires converting vec4 into int
     // before decoding, which would be more ops than this simple math solution
     // also bitshifting doens't works before OPENGL ES 3.0
-    decoded.x = ( encoded.r * 65536. + encoded.g * 256. ) / width;
-    decoded.y = ( encoded.b * 65536. + encoded.a * 256. ) / height;
+    decoded.x = ( encoded.r * 255. + encoded.g );
+    decoded.y = ( encoded.b * 255. + encoded.a );
     
     return decoded;
 }
     
 void main() {
     // get mask pixel coordinate
-    vec2 uv = gl_FragCoord.xy / 2;
+    vec2 uv = gl_FragCoord.xy ;
     // get mask color at coordinate
     vec4 maskColor = texture(t_mask, uv);
     // get position in input shader encoded as color in mask (require the width and height of input shader)

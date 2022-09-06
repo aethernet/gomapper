@@ -8,10 +8,10 @@ out vec4 frag_color;
 
 // get input shader resolution
 uniform vec2 u_resolution;
-uniform vec2 u_maskresolution;
+uniform float u_maskwidth;
 
 // get texture from previous renders
-uniform sampler2D t_shaderOne;
+uniform sampler2D t_previous;
 
 // get mask
 uniform sampler2D t_mask;
@@ -30,8 +30,8 @@ vec2 decodePositionFromColor(vec4 encoded, float width, float height) {
 }
     
 void main() {
-    // get mask pixel coordinate
-    vec2 uv = gl_FragCoord.xy/ u_maskresolution;
+    // get mask pixel coordinate (gl_FragCoord.y is always = 1. as our shader in a maskwidth * 1 texture)
+    vec2 uv = vec2(gl_FragCoord.x / u_maskwidth, gl_FragCoord.y);
 
     // get mask color at coordinate
     vec4 maskColor = texture(t_mask, vec2(uv.x, 1.));
@@ -40,7 +40,7 @@ void main() {
     vec2 position = decodePositionFromColor(maskColor, u_resolution.x, u_resolution.y);
     
     // get the color of input shader at mask coordinate
-    vec4 color = texture(t_shaderOne, position);
+    vec4 color = texture(t_previous, position);
 
     // render
     frag_color = color;

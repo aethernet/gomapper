@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/go-gl/gl/v2.1/gl"
@@ -10,7 +10,7 @@ import (
 
 // read file and return the contents with an ending \x00
 func readShaderFile(fileName string) string {
-	content, err := ioutil.ReadFile(fileName)
+	content, err := os.ReadFile(fileName)
 	if err != nil {fmt.Println("Err")}		
 	return string(content) + "\x00"
 }

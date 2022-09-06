@@ -7,10 +7,10 @@ func attach1FUniformToShader(program uint32, name string, value float32) {
 	gl.Uniform1f(uniform, value)
 }
 
-func attach2FUniformToShader(program uint32, name string, value1 float32, value2 float32) {
-	uniform := gl.GetUniformLocation(program, gl.Str(name + "\x00"))
-	gl.Uniform2f(uniform, value1, value2)
-}
+// func attach2FUniformToShader(program uint32, name string, value1 float32, value2 float32) {
+// 	uniform := gl.GetUniformLocation(program, gl.Str(name + "\x00"))
+// 	gl.Uniform2f(uniform, value1, value2)
+// }
 
 func attach1IUniformToShader(program uint32, name string, value int32) {
 	uniform := gl.GetUniformLocation(program, gl.Str(name + "\x00"))

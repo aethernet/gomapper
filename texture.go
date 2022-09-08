@@ -8,8 +8,6 @@ func renderFramebufferToScreen(screenProgram uint32, vao uint32, framebufferInde
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	
 	gl.UseProgram(screenProgram)
-	// passTextureFromFileTo(screenProgram, "mask.png", gl.TEXTURE0)
-	newTextureFromBytes()
 
 	// attach texture from shaderOne to screen
 	textureUniform := gl.GetUniformLocation(screenProgram, gl.Str("t_tex\x00"));

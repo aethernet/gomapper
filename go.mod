@@ -9,6 +9,8 @@ require (
 )
 
 require (
+	github.com/antonholmquist/jason v1.0.0 // indirect
+	golang.org/x/exp v0.0.0-20220907003533-145caa8ea1d0 // indirect
 	golang.org/x/net v0.0.0-20190918130420-a8b05e9114ab // indirect
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 )

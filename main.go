@@ -13,6 +13,7 @@ const (
 	width  = 800
 	height = 600
 	mappingWidth = 120
+	maxUniverse = 16
 )
 
 var (
@@ -39,6 +40,13 @@ func main() {
 	defer glfw.Terminate()
 
 	initOpenGL()
+
+	// load fixtures and create mapping texture
+	fixtures, err := decodeFixtureFromJson("fixtures.json")
+	if err != nil {
+		panic("Fixtures json not found or unreadable")
+	}
+	newTextureFromFixtures(fixtures)
 
 	screenProgram := newScreenProgram()
 

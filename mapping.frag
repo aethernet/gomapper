@@ -36,6 +36,10 @@ void main() {
     // get mask color at coordinate
     vec4 maskColor = texture(t_mask, vec2(uv.x, 1.));
 
+    // TODO = if maskPixel is full white (all to the max) return a black pixel (no info)
+    // this is a "blank" (unused value in the mask) so no need to compute it further
+    // a simple if here would do the trick
+
     // get position in input shader encoded as color in mask (require the width and height of input shader)
     vec2 position = decodePositionFromColor(maskColor, u_resolution.x, u_resolution.y);
     

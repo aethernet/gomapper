@@ -8,7 +8,7 @@ out vec4 frag_color;
 
 // get input shader resolution
 uniform vec2 u_resolution;
-uniform float u_maskwidth;
+uniform vec2 u_maskresolution;
 
 // get texture from previous renders
 uniform sampler2D t_previous;
@@ -30,15 +30,19 @@ vec2 decodePositionFromColor(vec4 encoded, float width, float height) {
 }
     
 void main() {
-    // get mask pixel coordinate (gl_FragCoord.y is always = 1. as our shader in a maskwidth * 1 texture)
-    vec2 uv = vec2(gl_FragCoord.x / u_maskwidth, gl_FragCoord.y);
+    // get mask pixel coordinate
+    vec2 uv = gl_FragCoord.xy / u_maskresolution;
 
     // get mask color at coordinate
-    vec4 maskColor = texture(t_mask, vec2(uv.x, 1.));
+    vec4 maskColor = texture(t_mask, uv);
 
-    // TODO = if maskPixel is full white (all to the max) return a black pixel (no info)
-    // this is a "blank" (unused value in the mask) so no need to compute it further
-    // a simple if here would do the trick
+    // if this is a full white pixel in the mask it means it's an unused value 
+    // so no need to compute it further and we can return a black pixel
+    if(maskColor == vec4(1.,1.,1.,1.))
+    {
+        frag_color = vec4(0.,0.,0.,0.);
+        return;
+    }
 
     // get position in input shader encoded as color in mask (require the width and height of input shader)
     vec2 position = decodePositionFromColor(maskColor, u_resolution.x, u_resolution.y);

@@ -5,6 +5,7 @@ import (
 	_ "image/png"
 	"runtime"
 
+	"github.com/Hundemeier/go-sacn/sacn"
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -12,8 +13,8 @@ import (
 const (
 	width  = 800
 	height = 600
-	mappingWidth = 120
-	maxUniverse = 16
+	maxUniverse = 16 // TODO : should be computed
+	fps = 60
 )
 
 var (
@@ -27,14 +28,13 @@ var (
     }
     previousTime float64
     runTime float64 = 0.
-		pixels [512]byte // will serve as an output in an unsafe way // TODO: this is only one universe, will have to be creative for multiuniverse
 		currentScreenFramebufferRendered int32 = 1
+		ips = []string{"192.168.178.40"}
+		transmitter sacn.Transmitter
 )
 
 func main() {
 	runtime.LockOSThread()
-
-	sacnChan := initsACNTransmitter([]string{"192.168.178.40"}, 1)
 
 	window := initGlfw()
 	defer glfw.Terminate()
@@ -48,9 +48,14 @@ func main() {
 	}
 	newTextureFromFixtures(fixtures)
 
+	transmitter = initSACNTransmitter()
+
+	//beware ! setupChannels needs to be called AFTER fixtures has been loaded
+	setupChannels(ips, universeMapping, transmitter)
+
 	screenProgram := newScreenProgram()
 
-	mappingProgram, mappingShaderTex, mappingFramebuffer := newFramebufferProgram(mappingWidth, 1, "default.vert", "mapping.frag")
+	mappingProgram, mappingShaderTex, mappingFramebuffer := newFramebufferProgram(170, maxUniverse, "default.vert", "mapping.frag")
 
 	shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer := newFramebufferProgram(width, height, "default.vert", "shaderOne.frag")
 
@@ -72,7 +77,7 @@ func main() {
 		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2, 1)
 
 		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
-		extractAndSendMappedPixels(mappingWidth, 1, sacnChan)
+		extractAndSendMappedPixels()
 
 		/** go to screen **/
 		renderFramebufferToScreen(screenProgram, vao, currentScreenFramebufferRendered)

@@ -1,0 +1,11 @@
+{
+  "fixtures": [
+  {
+    "start": [0, 0],
+    "end": [800, 600],
+    "shape": "line",
+    "pixelCount": 120,
+    "pixelAddressStartsAt": 1,
+    "universe": 1
+  }
+]}

@@ -27,7 +27,8 @@ func attachDefaultUniformToShader(program uint32) {
 	resolutionUniform := gl.GetUniformLocation(program, gl.Str("u_resolution\x00"))
 	gl.Uniform2f(resolutionUniform, float32(width), float32(height))
 
-	// mapping texture width
-	attach1FUniformToShader(program, "u_maskwidth", mappingWidth)
+	// attach mapping texture resolution
+	maskResolutionUniform := gl.GetUniformLocation(program, gl.Str("u_maskresolution\x00"))
+	gl.Uniform2f(maskResolutionUniform, float32(170.), float32(maxUniverse))
 }
 

@@ -25,7 +25,7 @@ func renderFramebufferToScreen(screenProgram uint32, vao uint32, framebufferInde
 	gl.Uniform2f(resolutionUniform, float32(width), float32(height))
 
 	maskResolutionUniform := gl.GetUniformLocation(screenProgram, gl.Str("u_maskresolution\x00"))
-	gl.Uniform2f(maskResolutionUniform, float32(mappingWidth), float32(1.))
+	gl.Uniform2f(maskResolutionUniform, float32(170), float32(maxUniverse))
 	
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))

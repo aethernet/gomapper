@@ -50,7 +50,7 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 	for _, fixture := range fixtures {
 		pixels := distributeEncodePixelsForLine(fixture.start, fixture.end, fixture.pixelCount)
 		offset := fixture.pixelAddressStartsAt
-		universe := fixture.universe
+		startUniverse := fixture.universe
 
 		// we need to order the pixels in the order of the output
 		// we'll do a new mapping : 
@@ -63,8 +63,14 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 		// to decode we'll simply split our output by 512 and send to each universe
 
 		for pixelKey, pixel := range pixels {
-			pixelOffset := int(offset) + pixelKey * 3
-			universeOffset := int(universe) - 1 + int(math.Floor(float64(pixelOffset) / 510.))
+			universeOffset := int(math.Floor(float64(pixelKey) / 170.))
+
+			// pixel first byte (r)
+			// = offset (where to start in the universe)
+			// + key (posisition of the pixel in the chain) * 4
+			pixelOffset := int(offset) + pixelKey * 4
+
+			universe := startUniverse + int64(universeOffset)
 
 			// we keep track of which universe we've used for which line
 			// when pushing to sacn, for each pack of 512 value, we'll get corresponding universe from that table
@@ -73,7 +79,9 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 				universeMapping = append(universeMapping, universeOffset)
 			}
 
-			maskIndex := int(universe - 1) * 512 + pixelOffset - 1
+			// 1 universe in RGBA is 680 bytes (4*170) while in RGB it will be only 510 bytes (3x170)
+			// our mask is in rgba so we multiply by 680
+			maskIndex := int(universe - 1) * 680 + pixelOffset
 
 			mask[maskIndex] = pixel[0]
 			mask[maskIndex + 1] = pixel[1]

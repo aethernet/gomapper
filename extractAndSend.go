@@ -30,17 +30,26 @@ func extractAndSendMappedPixels () {
 		// read by 512 pixels
 
 		var pixels [512]byte
-		runtime.KeepAlive(pixels)
+		runtime.KeepAlive(pixels) // not sure this is needed but it might help preventing pixel to be garbage collected
+		
+		// here we take 170 pixels at a time (1 universe) as it's in RGB it will be 510 bytes, which we store in our 512 bytes array
+		// Note that the texture we extract from is RGBA so each lines are 680 bytes, opengl should extract just what we need
 		gl.ReadPixels(0, int32(key), 170, int32(key+1), gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
 		
+		// just to be sure, we'll black out the last two bytes before sending
+		pixels[510] = 0;
+		pixels[511] = 0;
+
 		// select sender for universe
 		sacn := channels[key]
 
-		// // // this debug is quite expensive so turning it of while debugging other stuffs
+		// // this debug is quite expensive so turning it of while debugging other stuffs
 		// fmt.Println("sending universe", key, universe)
+		// fmt.Println("sending pixels", key, pixels)
 
 		// sending the pixels 
 		sacn<-pixels
+
 	}
 }
 

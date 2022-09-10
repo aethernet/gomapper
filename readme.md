@@ -18,25 +18,25 @@ This is half baked :
 - [x] generate artnet or sACN udp packages
 - [x] fix broken mapping
 - [x] add mask generator from a json
-- [-] add multi-universe support
+- [x] add multi-universe support
 - [x] add a fps throttling for sacn
+- [ ] dynamic universes
+- [ ] fix mapping.frag for multi-universe (or mask generator)
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI
 - [ ] add isf support
 - [ ] add automatic OSC -> ISF controls
+- [ ] optional antialiasing (average 4 next pixels)
 
 Controls
 - [Space] - toggle view between Rendering and Mapping Shader
 - [Esc] - Quit
 
-
 Current limitations (todo for later):
 - Only one shader as input
-- Limited to 16 universe (can be easily changed in main.go)
-
-Notes : 
-- Encoding the mapping mask as a texture is good idea, but using .png as storage was stupid (it's a lossy format), let's just do a raw bytes format. It's unidimensional anyway.
+- Limited to 16 universe (can be easily changed in main.go) (actually should be dynamic)
+- input shader will render in a 800x600 texture
 
 ### Multi-Universe : 
 First prototype was using a p x 1 mapping texture, n beeing the quantity of pixel to map.
@@ -46,6 +46,8 @@ Updated approach is to use a 512 x u mapping texture, u beeing the quantity of u
 If a fixture is overflowing a universe, it will continue on the next one.
 
 Each universe is encoded as one line in the mapping texture and all unused pixels will be "blank" (actually white -> vec4(255 255 255 255) as black -> vec4(0 0 0 0) translate is a valid position vec2(0, 0)) We'll filter out blank pixel in the mapping shader (no computation) and won't send non mapped universe out on the network.
+
+Note : As we only need 3 channels per pixel (RGB) we can send 170 pixels per universe, but it requires dealing with the "2 left over bits" at the end of the frame.
 
 ### Thanks to : 
 - https://github.com/KyleBanks/conways-gol

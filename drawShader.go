@@ -4,7 +4,10 @@ import "github.com/go-gl/gl/v2.1/gl"
 
 // render shader to its framebuffer, pass an optional texture as input (will be available as t_previous)
 func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32, width int, height int, vao uint32, GLtextureSlot uint32, passTexture int32) {
+		
+		// FIXME? we might no need to call that bind every frame
 		gl.BindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+		
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		gl.UseProgram(program)
 		

@@ -1,25 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"math"
+	"reflect"
 	"unsafe"
 
 	"github.com/go-gl/gl/v2.1/gl"
 	"golang.org/x/exp/slices"
 )
 
-//keep the list of universe in the order they appears in the mask
-var universeMapping []int
-
 func distributeEncodePixelsForLine(start []int64, end []int64, quantity int64) [][4]byte {
 	var pixels [][4]byte
 
 	for key := 0; key < int(quantity); key++ {
-		incX := int64(end[0] - start[0]) / quantity - 1.
-		incY := int64(end[1] - start[1]) / quantity - 1.
+		incX := float64(end[0] - start[0]) / float64(quantity - 1)
+		incY := float64(end[1] - start[1]) / float64(quantity - 1)
 		
-		x := start[0] + int64(key) * incX
-		y := start[1] + int64(key) * incY
+		x := float64(start[0]) + float64(key) * incX
+		y := float64(start[1]) + float64(key) * incY
 
 		pixel := [2]int64{int64(x), int64(y)}
 
@@ -42,10 +41,8 @@ func encodePositionAsColor (pixel [2]int64) [4]byte {
 
 func newTextureFromFixtures(fixtures []Fixture) uint32  {
 	// initialise our mask with all white pixels (we'll skip those values when computing our mask in opengl)
-	var mask [512*maxUniverse]byte
-	for i := range mask {
-    mask[i] = 255
-	}
+	// even if our mask has no pre-defined size, we only fill it up to 680 (170 pixels rgba) * our mapped universe quantity
+	var mask []byte
 
 	for _, fixture := range fixtures {
 		pixels := distributeEncodePixelsForLine(fixture.start, fixture.end, fixture.pixelCount)
@@ -71,17 +68,22 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 			pixelOffset := int(offset) + pixelKey * 4
 
 			universe := startUniverse + int64(universeOffset)
-
-			// we keep track of which universe we've used for which line
-			// when pushing to sacn, for each pack of 512 value, we'll get corresponding universe from that table
-			universeExist := slices.IndexFunc(universeMapping, func(u int) bool { return u == universeOffset })
+			
+			// we keep track of which universe we've used for which line, a universe in mapping texture is 680 bytes (170 pixels rgba)
+			// when pushing to sacn, for each pack of 512 bytes (170 pixels in rgb), we'll get corresponding universe from that table
+			universeExist := slices.IndexFunc(universeMapping, func(u int) bool { return u == int(universe) })
+			
 			if universeExist == -1 {
-				universeMapping = append(universeMapping, universeOffset)
+				// if our universe is not mapped yet, let's map it and prepare a black line in the mapping texture
+				for i := 0; i < 680; i++ {
+					mask = append(mask, 255)
+				}
+				universeMapping = append(universeMapping, int(universe))
 			}
-
+			
 			// 1 universe in RGBA is 680 bytes (4*170) while in RGB it will be only 510 bytes (3x170)
 			// our mask is in rgba so we multiply by 680
-			maskIndex := int(universe - 1) * 680 + pixelOffset
+			maskIndex := int(universe - int64(universeOffset) - 1) * 680 + pixelOffset - 1
 
 			mask[maskIndex] = pixel[0]
 			mask[maskIndex + 1] = pixel[1]
@@ -90,32 +92,39 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 		}
 	}
 
+	fmt.Println(mask)
+
 	texture := newTextureFromBytes(mask)
 
 	return texture
 }
 
 // load a bytearray and return a 170 x maxUniverse rgba pixels texture
-func newTextureFromBytes(rgba [512*maxUniverse]byte) uint32 {
+func newTextureFromBytes(rgba []byte) uint32 {
+
+	// lot of unsafe in here : https://stackoverflow.com/questions/36706843/how-to-get-the-underlying-array-of-a-slice-in-go
+	// but it seems like it's fine as we only do this once to copy all those bytes into the gpu memory
+	hdr := (*reflect.SliceHeader)(unsafe.Pointer(&rgba))
+	data := *(*[4]int)(unsafe.Pointer(hdr.Data))
 
 	var texture uint32
 	gl.GenTextures(1, &texture)
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexImage2D(
 		gl.TEXTURE_2D,
 		0,
 		gl.RGBA,
 		int32(170),
-		int32(maxUniverse),
-		0,
+		int32(len(universeMapping)),
+		0, 
 		gl.RGBA,
 		gl.UNSIGNED_BYTE,
-		unsafe.Pointer(&rgba),
+		unsafe.Pointer(&data),
 	)
 
 	return texture

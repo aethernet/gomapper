@@ -19,9 +19,10 @@ This is half baked :
 - [x] fix broken mapping
 - [x] add mask generator from a json
 - [x] add multi-universe support
-- [x] add a fps throttling for sacn
-- [ ] dynamic universes
-- [ ] fix mapping.frag for multi-universe (or mask generator)
+- ~~[x] fps throttling for sacn~~
+- [x] fps throttling for all (screen and sacn output)
+- [x] dynamic quantity of universes (should be limited by underlying hardware)
+- [ ] fix mapping.frag for multi-universe
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI
@@ -35,8 +36,8 @@ Controls
 
 Current limitations (todo for later):
 - Only one shader as input
-- Limited to 16 universe (can be easily changed in main.go) (actually should be dynamic)
 - input shader will render in a 800x600 texture
+- crash when there's a few universe
 
 ### Multi-Universe : 
 First prototype was using a p x 1 mapping texture, n beeing the quantity of pixel to map.

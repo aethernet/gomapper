@@ -18,19 +18,11 @@ import (
 
 var lastTransmission float32 = 0.
 func extractAndSendMappedPixels () {	
-	time := getUpdateTime()
-	if( time >= lastTransmission + 1./fps) {
-		lastTransmission = time // next frame
-	} else {
-		// fmt.Println(time)
-		return // not yet
-	}
-
 	for key := range universeMapping {
 		// read by 512 pixels
 
 		var pixels [512]byte
-		runtime.KeepAlive(pixels) // not sure this is needed but it might help preventing pixel to be garbage collected
+		runtime.KeepAlive(pixels) // absolutely needed to prevent pixel to be garbage collected before they're read by C, 
 		
 		// here we take 170 pixels at a time (1 universe) as it's in RGB it will be 510 bytes, which we store in our 512 bytes array
 		// Note that the texture we extract from is RGBA so each lines are 680 bytes, opengl should extract just what we need

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	_ "image/png"
 	"runtime"
 
 	"github.com/Hundemeier/go-sacn/sacn"
@@ -13,7 +12,6 @@ import (
 const (
 	width  = 800
 	height = 600
-	maxUniverse = 16 // TODO : should be computed
 	fps = 60
 )
 
@@ -31,6 +29,7 @@ var (
 		currentScreenFramebufferRendered int32 = 1
 		ips = []string{"192.168.178.40"}
 		transmitter sacn.Transmitter
+		universeMapping []int // will keep the relation line in the mapping texture -> universe to output
 )
 
 func main() {
@@ -55,7 +54,7 @@ func main() {
 
 	screenProgram := newScreenProgram()
 
-	mappingProgram, mappingShaderTex, mappingFramebuffer := newFramebufferProgram(170, maxUniverse, "default.vert", "mapping.frag")
+	mappingProgram, mappingShaderTex, mappingFramebuffer := newFramebufferProgram(170, int32(len(universeMapping)), "default.vert", "mapping.frag")
 
 	shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer := newFramebufferProgram(width, height, "default.vert", "shaderOne.frag")
 
@@ -69,6 +68,15 @@ func main() {
 	window.SetKeyCallback(keyCallback)
 
 	for !window.ShouldClose() {	
+
+		// throttle to x fps (screen and sacn output alike)
+		time := getUpdateTime()
+		if( time >= lastTransmission + 1./fps) {
+			lastTransmission = time // next frame
+		} else {
+			// fmt.Println(time)
+			continue // not yet
+		}
 
 		// render shaderOne to TEXTURE1
 		drawShaderToFramebuffer(shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer, width, height, vao, gl.TEXTURE1, -1)

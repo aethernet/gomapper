@@ -41,13 +41,15 @@ Current limitations (todo for later):
 ### Multi-Universe : 
 First prototype was using a p x 1 mapping texture, n beeing the quantity of pixel to map.
 
-Updated approach is to use a 512 x u mapping texture, u beeing the quantity of universe to send.
+Updated approach is to use a 170 x u mapping texture, u beeing the quantity of universe to send.
 
 If a fixture is overflowing a universe, it will continue on the next one.
 
 Each universe is encoded as one line in the mapping texture and all unused pixels will be "blank" (actually white -> vec4(255 255 255 255) as black -> vec4(0 0 0 0) translate is a valid position vec2(0, 0)) We'll filter out blank pixel in the mapping shader (no computation) and won't send non mapped universe out on the network.
 
 Note : As we only need 3 channels per pixel (RGB) we can send 170 pixels per universe, but it requires dealing with the "2 left over bits" at the end of the frame.
+
+Our mapping texture is 680 bytes per universe (rgba) while our extraction is only 510 bytes per univese (rgb).
 
 ### Thanks to : 
 - https://github.com/KyleBanks/conways-gol

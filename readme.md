@@ -31,17 +31,7 @@ This is half baked :
 - [ ] optional antialiasing (average 4 next pixels)
 
 ### State & Debug
-Currently broken :
-
-Textures are not passed correctly.
-All frags, receives the ouput of shaderOne on all sampler
-Very weird, shaderOne is attached to texture1, so even if the uniform is default it should be texture0 
-which is our mask ...
-
-Somehow texture 0 and texture 1 gets the output of shader1
-While texture 2 also gets the output of shader1, but has a height of 1 pixel
-
-My guess is that we either forget to change the "active texture" somwhere or we overwrite textures
+The mapping shader is currently broken.
 
 ### Controls
 - [Space] - toggle view between Rendering and Mapping Shader

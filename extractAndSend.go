@@ -26,6 +26,7 @@ func extractAndSendMappedPixels () {
 		
 		// here we take 170 pixels at a time (1 universe) as it's in RGB it will be 510 bytes, which we store in our 512 bytes array
 		// Note that the texture we extract from is RGBA so each lines are 680 bytes, opengl should extract just what we need
+		gl.ActiveTexture(mappingTexture)
 		gl.ReadPixels(0, int32(key), 170, int32(key+1), gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
 		
 		// just to be sure, we'll black out the last two bytes before sending

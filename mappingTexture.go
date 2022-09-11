@@ -82,7 +82,7 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 			
 			// 1 universe in RGBA is 680 bytes (4*170) while in RGB it will be only 510 bytes (3x170)
 			// our mask is in rgba so we multiply by 680
-			maskIndex := int(universe - int64(universeOffset) - 1) * 680 + pixelOffset - 1
+			maskIndex := int(int64(len(universeMapping)) - int64(universeOffset) - 1) * 680 + pixelOffset - 1
 
 			mask[maskIndex] = pixel[0]
 			mask[maskIndex + 1] = pixel[1]

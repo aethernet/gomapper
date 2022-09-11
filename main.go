@@ -87,7 +87,8 @@ func main() {
 		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2, int32(shaderOneShaderTex))
 
 		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
-		extractAndSendMappedPixelsFrom(mappingFramebuffer)
+		// FIXME: getting the pixels from the "output" framebuffer works, while taking them from the mapping framebuffer doesn't
+		extractAndSendMappedPixelsFrom(0)
 
 		/** go to screen **/
 		renderFramebufferToScreen(screenProgram, vao, currentScreenFramebufferRendered)

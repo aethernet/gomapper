@@ -22,7 +22,8 @@ This is half baked :
 - ~~[x] fps throttling for sacn~~
 - [x] fps throttling for all (screen and sacn output)
 - [x] dynamic quantity of universes (should be limited by underlying hardware)
-- [x] fix mapping.frag for multi-universe 
+- [x] fix mapping.frag 
+- [-] fix multi-universe
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI
@@ -30,9 +31,9 @@ This is half baked :
 - [ ] add automatic OSC -> ISF controls
 - [ ] optional antialiasing (average 4 next pixels)
 
-### State & Debug
+### Debug
 - mapping position has to be multiplied by 10 to work (why ?!)
-- ReadPixels is reading from the currently on screen shader, it should always read the mapping shader
+- when doing multi-universe, colors are shifting (probably an offset by 1 byte issue)
 
 ### Controls
 - [Space] - toggle view between Rendering and Mapping Shader
@@ -41,6 +42,7 @@ This is half baked :
 ### Current limitations (todo for later):
 - Only one shader as input
 - input shader will render in a 800x600 texture
+- ReadPixels is reading from the currently on screen shader, it should always read the mapping shader
 
 ### Multi-Universe : 
 First prototype was using a p x 1 mapping texture, n beeing the quantity of pixel to map.

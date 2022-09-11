@@ -6,6 +6,14 @@
     "shape": "line",
     "pixelCount": 170,
     "pixelAddressStartsAt": 1,
-    "universe": 1
+    "universe": 2
+  },
+  {
+    "start": [0, 0],
+    "end": [800, 600],
+    "shape": "line",
+    "pixelCount": 190,
+    "pixelAddressStartsAt": 1,
+    "universe": 3
   }
 ]}

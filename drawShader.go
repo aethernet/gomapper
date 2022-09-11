@@ -3,7 +3,7 @@ package main
 import "github.com/go-gl/gl/v2.1/gl"
 
 // render shader to its framebuffer, pass an optional texture as input (will be available as t_previous)
-func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32, width int, height int, vao uint32, GLtextureSlot uint32, passTexture int32) {
+func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32, width int, height int, vao uint32, GLtextureSlot uint32, previousTexture int32) {
 		
 		// FIXME? we might no need to call that bind every frame
 		gl.BindFramebuffer(gl.FRAMEBUFFER, framebuffer)
@@ -13,10 +13,13 @@ func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32,
 		
 		attachDefaultUniformToShader(program)
 
-		if passTexture >= 0 {
+		if previousTexture >= 0 {
 			// Attach TEXTURE from previous shader as t_previous
-			attach1IUniformToShader(program, "t_previous", passTexture)
-		}
+			attach1IUniformToShader(program, "t_previous", previousTexture)
+		} 
+
+		// attach mapping texture
+		attach1IUniformToShader(program, "t_mask", 0)
 
 		gl.BindVertexArray(vao)
 		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))

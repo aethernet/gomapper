@@ -24,12 +24,12 @@ vec2 decodePositionFromColor(vec4 encoded, float width, float height) {
 void main() {
   vec2 st = gl_FragCoord.xy / u_resolution / 2;
 
-  // get mask pixel coordinate
-  vec2 uv = gl_FragCoord.xy / u_resolution / 4;
-  // get mask color at coordinate
-  vec4 maskColor = texture(t_mask, vec2(uv.x, 1));
-  // get position in input shader encoded as color in mask (require the width and height of input shader)
-  vec2 position = decodePositionFromColor(maskColor, u_resolution.x, u_resolution.y);
+  // // get mask pixel coordinate
+  // vec2 uv = gl_FragCoord.xy / u_resolution / 4;
+  // // get mask color at coordinate
+  // vec4 maskColor = texture(t_mask, vec2(uv.x, 1));
+  // // get position in input shader encoded as color in mask (require the width and height of input shader)
+  // vec2 position = decodePositionFromColor(maskColor, u_resolution.x, u_resolution.y);
   
   vec4 color = texture(t_tex, st);
 

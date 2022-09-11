@@ -22,7 +22,7 @@ This is half baked :
 - ~~[x] fps throttling for sacn~~
 - [x] fps throttling for all (screen and sacn output)
 - [x] dynamic quantity of universes (should be limited by underlying hardware)
-- [ ] fix mapping.frag for multi-universe
+- [-] fix mapping.frag for multi-universe
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI

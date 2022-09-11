@@ -4,7 +4,7 @@
     "start": [0, 0],
     "end": [800, 600],
     "shape": "line",
-    "pixelCount": 120,
+    "pixelCount": 50,
     "pixelAddressStartsAt": 1,
     "universe": 1
   }

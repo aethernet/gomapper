@@ -122,7 +122,7 @@ func newTextureFromBytes(rgba []byte) uint32 {
 		int32(len(universeMapping)),
 		0, 
 		gl.RGBA,
-		gl.UNSIGNED_BYTE,
+		gl.BYTE,
 		unsafe.Pointer(&data),
 	)
 

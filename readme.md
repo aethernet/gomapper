@@ -22,7 +22,7 @@ This is half baked :
 - ~~[x] fps throttling for sacn~~
 - [x] fps throttling for all (screen and sacn output)
 - [x] dynamic quantity of universes (should be limited by underlying hardware)
-- [-] fix mapping.frag for multi-universe 
+- [x] fix mapping.frag for multi-universe 
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI
@@ -31,9 +31,8 @@ This is half baked :
 - [ ] optional antialiasing (average 4 next pixels)
 
 ### State & Debug
-- The mapping shader is currently broken.
-- All three texture are always written at the same time by shader 1. This is a major issue, and I don't know yet how to fix it.
-Current theory is that they should be "unbound" or deactivate somehow before rendering. No idea how.
+- mapping position has to be multiplied by 10 to work (why ?!)
+- ReadPixels is reading from the currently on screen shader, it should always read the mapping shader
 
 ### Controls
 - [Space] - toggle view between Rendering and Mapping Shader

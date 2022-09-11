@@ -87,7 +87,7 @@ func main() {
 		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2, int32(shaderOneShaderTex))
 
 		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
-		extractAndSendMappedPixels()
+		extractAndSendMappedPixelsFrom(mappingFramebuffer)
 
 		/** go to screen **/
 		renderFramebufferToScreen(screenProgram, vao, currentScreenFramebufferRendered)

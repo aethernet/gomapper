@@ -22,10 +22,6 @@ func drawShaderToFramebuffer(program uint32, texture uint32, framebuffer uint32,
 	gl.ActiveTexture(GLtextureSlot)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
 
-
-	gl.ActiveTexture(GLtextureSlot)
-	gl.BindTexture(gl.TEXTURE_2D, texture)
-
 	gl.BindFramebuffer(gl.FRAMEBUFFER, framebuffer)
 	
 	gl.ClearColor(0.1, 0.1, 0.1, 1.0);

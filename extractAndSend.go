@@ -17,7 +17,12 @@ import (
 // We do this by capping transmission at a fixed fps rate defined in a main const
 
 var lastTransmission float32 = 0.
-func extractAndSendMappedPixels () {	
+func extractAndSendMappedPixelsFrom (framebuffer uint32) {	
+	
+	// set source framebuffer (reset when leaving)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+	defer gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+
 	for key := range universeMapping {
 		// read by 512 pixels
 
@@ -26,8 +31,9 @@ func extractAndSendMappedPixels () {
 		
 		// here we take 170 pixels at a time (1 universe) as it's in RGB it will be 510 bytes, which we store in our 512 bytes array
 		// Note that the texture we extract from is RGBA so each lines are 680 bytes, opengl should extract just what we need
-		gl.ActiveTexture(mappingTexture)
-		gl.ReadPixels(0, int32(key), 170, int32(key+1), gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
+		// gl.ActiveTexture(gl.TEXTURE0)
+		// gl.BindTexture(gl.TEXTURE_2D, mappingTexture)
+		gl.ReadPixels(0, 1, 170, 1, gl.RGB, gl.UNSIGNED_BYTE, unsafe.Pointer(&pixels))
 		
 		// just to be sure, we'll black out the last two bytes before sending
 		pixels[510] = 0;

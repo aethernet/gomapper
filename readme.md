@@ -33,7 +33,6 @@ This is half baked :
 
 ### Debug
 - mapping position has to be multiplied by 10 to work (why ?!)
-- when doing multi-universe, colors are shifting (probably an offset by 1 byte issue)
 
 ### Controls
 - [Space] - toggle view between Rendering and Mapping Shader

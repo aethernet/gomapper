@@ -5,15 +5,15 @@
     "end": [400, 300],
     "shape": "line",
     "pixelCount": 170,
-    "pixelAddressStartsAt": 1,
-    "universe": 2
+    "pixelAddressStartsAt": 0,
+    "universe": 1
   },
   {
     "start": [0, 0],
     "end": [800, 600],
     "shape": "line",
-    "pixelCount": 190,
-    "pixelAddressStartsAt": 1,
+    "pixelCount": 170,
+    "pixelAddressStartsAt": 0,
     "universe": 3
   }
 ]}

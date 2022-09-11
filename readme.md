@@ -22,7 +22,7 @@ This is half baked :
 - ~~[x] fps throttling for sacn~~
 - [x] fps throttling for all (screen and sacn output)
 - [x] dynamic quantity of universes (should be limited by underlying hardware)
-- [-] fix mapping.frag for multi-universe
+- [-] fix mapping.frag for multi-universe 
 - [ ] basic debug UI [draw mapping lines on top of screen]
 - [ ] make it run on a jetson nano
 - [-] make basic control UI
@@ -30,14 +30,26 @@ This is half baked :
 - [ ] add automatic OSC -> ISF controls
 - [ ] optional antialiasing (average 4 next pixels)
 
-Controls
+### State & Debug
+Currently broken :
+
+Textures are not passed correctly.
+All frags, receives the ouput of shaderOne on all sampler
+Very weird, shaderOne is attached to texture1, so even if the uniform is default it should be texture0 
+which is our mask ...
+
+Somehow texture 0 and texture 1 gets the output of shader1
+While texture 2 also gets the output of shader1, but has a height of 1 pixel
+
+My guess is that we either forget to change the "active texture" somwhere or we overwrite textures
+
+### Controls
 - [Space] - toggle view between Rendering and Mapping Shader
 - [Esc] - Quit
 
-Current limitations (todo for later):
+### Current limitations (todo for later):
 - Only one shader as input
 - input shader will render in a 800x600 texture
-- crash when there's a few universe
 
 ### Multi-Universe : 
 First prototype was using a p x 1 mapping texture, n beeing the quantity of pixel to map.

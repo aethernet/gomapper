@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 	"unsafe"
@@ -92,7 +91,7 @@ func newTextureFromFixtures(fixtures []Fixture) uint32  {
 		}
 	}
 
-	fmt.Println(mask)
+	// fmt.Println(mask)
 
 	texture := newTextureFromBytes(mask)
 
@@ -109,7 +108,7 @@ func newTextureFromBytes(rgba []byte) uint32 {
 
 	var texture uint32
 	gl.GenTextures(1, &texture)
-	gl.ActiveTexture(gl.TEXTURE0)
+	gl.ActiveTexture(gl.TEXTURE31)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)

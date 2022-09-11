@@ -45,7 +45,7 @@ func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error)
 
 func newFramebufferProgram(width int32, height int32, vertexFile string, fragFile string,) (uint32, uint32, uint32) {
 	var vertexShaderSource = readShaderFile(vertexFile)    // the vertex shader
-	var fragmentShaderSource = readShaderFile(fragFile)		// the fragment shader
+	var fragmentShaderSource = readShaderFile(fragFile)		 // the fragment shader
 
 	program, err := newProgram(vertexShaderSource, fragmentShaderSource)
 	if err != nil {
@@ -66,11 +66,15 @@ func newFramebufferProgram(width int32, height int32, vertexFile string, fragFil
 	gl.GenFramebuffers(1, &framebuffer)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, framebuffer)
 
+	// attach texture to framebuffer
 	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shaderTex, 0);
 
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		panic("something's wrong with our framebuffer")
 	}
+
+	// unbind the framebuffer to prevent accidentaly writing to it
+	gl.BindFramebuffer(gl.FRAMEBUFFER, 0);
 
 	return program, shaderTex, framebuffer
 }

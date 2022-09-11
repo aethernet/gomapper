@@ -49,7 +49,7 @@ void main() {
     vec2 center = u_resolution * 0.5; // draw the shape at the center of the screen
     float size = u_resolution.y * 0.4; // make the shape a quarter of the screen height
     float sides = 2.;
-    float rotation = u_time * 2.; // rotation is in radians, but for time it doesnt really matter
+    float rotation = u_time * 0.5; // rotation is in radians, but for time it doesnt really matter
 
     // lets make our shape in the center of the screen. We have to subtract half of it's width and height just like in p5
     float x = center.x ;

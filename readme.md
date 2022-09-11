@@ -31,7 +31,9 @@ This is half baked :
 - [ ] optional antialiasing (average 4 next pixels)
 
 ### State & Debug
-The mapping shader is currently broken.
+- The mapping shader is currently broken.
+- All three texture are always written at the same time by shader 1. This is a major issue, and I don't know yet how to fix it.
+Current theory is that they should be "unbound" or deactivate somehow before rendering. No idea how.
 
 ### Controls
 - [Space] - toggle view between Rendering and Mapping Shader

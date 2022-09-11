@@ -77,6 +77,7 @@ func newFramebufferProgram(width int32, height int32, vertexFile string, fragFil
 
 	// unbind the framebuffer to prevent accidentaly writing to it
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0);
+	// gl.BindTexture(gl.TEXTURE_2D, 0)
 
 	return program, shaderTex, framebuffer
 }

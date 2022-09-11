@@ -30,6 +30,7 @@ var (
 		ips = []string{"192.168.178.40"}
 		transmitter sacn.Transmitter
 		universeMapping []int // will keep the relation line in the mapping texture -> universe to output
+		mappingTexture uint32
 )
 
 func main() {
@@ -45,7 +46,8 @@ func main() {
 	if err != nil {
 		panic("Fixtures json not found or unreadable")
 	}
-	newTextureFromFixtures(fixtures)
+	
+	mappingTexture = newTextureFromFixtures(fixtures)
 
 	transmitter = initSACNTransmitter()
 
@@ -54,10 +56,10 @@ func main() {
 
 	screenProgram := newScreenProgram()
 
+	
 	mappingProgram, mappingShaderTex, mappingFramebuffer := newFramebufferProgram(170, int32(len(universeMapping)), "default.vert", "mapping.frag")
-
 	shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer := newFramebufferProgram(width, height, "default.vert", "shaderOne.frag")
-
+	
 	// configure the vertex data for a full screen square
 	vao := makeVao(square)
 
@@ -79,10 +81,10 @@ func main() {
 		}
 
 		// render shaderOne to TEXTURE1
-		drawShaderToFramebuffer(shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer, width, height, vao, gl.TEXTURE1, -1)
+		drawShaderToFramebuffer(shaderOneProgram, shaderOneShaderTex, shaderOneShaderFramebuffer, width, height, vao, gl.TEXTURE1, int32(-1))
 		
 		// render mappingShader to TEXTURE2
-		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2, 1)
+		drawShaderToFramebuffer(mappingProgram, mappingShaderTex, mappingFramebuffer, width, height, vao, gl.TEXTURE2, int32(shaderOneShaderTex))
 
 		// extract and print mapped pixels from latest rendered shader (Mapping Shader)
 		extractAndSendMappedPixels()
